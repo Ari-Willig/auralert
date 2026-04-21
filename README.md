@@ -1,6 +1,6 @@
 # auralert — Real-Time Seizure Prediction System
 
-auralert is an end-to-end seizure prediction system that acquires EEG signals from a wearable device, classifies them in real time using a trained deep learning model hosted on a web server, and delivers classification alerts to a mobile application. The system is designed to provide advance warning before a seizure event, giving patients and caregivers critical response time.
+auralert is an end-to-end seizure prediction system prototype that acquires EEG signals from a wearable device, classifies them in real time using a trained deep learning model hosted on a web server, and delivers classification alerts to a mobile application. The system is designed to provide advance warning before a seizure event, giving patients and caregivers critical response time.
 
 ---
 
