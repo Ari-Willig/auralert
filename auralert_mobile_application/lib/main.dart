@@ -68,8 +68,10 @@ class _AlertHomePageState extends State<AlertHomePage> {
           _status = "Connected";
         });
 
-        if (prediction == 2 && !acknowledged && !_alertActive) {
+        if ((prediction == 2) && !acknowledged && !_alertActive) {
           setState(() => _alertActive = true);
+          _triggerAlert();
+        } else if (prediction == 1 && !_alertActive) {
           _triggerAlert();
         }
       }
@@ -80,6 +82,7 @@ class _AlertHomePageState extends State<AlertHomePage> {
 
   Future<void> _triggerAlert() async {
     await _audioPlayer.setVolume(1.0);
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
     await _audioPlayer.play(AssetSource('alert.mp3'));
   }
 
@@ -253,6 +256,55 @@ class _AlertHomePageState extends State<AlertHomePage> {
                 ),
               ),
             ),
+          // Preictal warning banner
+        if (_lastPrediction == 1 && !_alertActive)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              color: Colors.orange,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Row(
+                    children: [
+                      Icon(Icons.warning_rounded, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text(
+                        "Pre-seizure activity detected",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        await http
+                            .post(Uri.parse("$SERVER_URL/acknowledge"))
+                            .timeout(const Duration(seconds: 5));
+                      } catch (e) {
+                        print("Failed to send ACK: $e");
+                      }
+                      setState(() => _lastPrediction = -1);
+                      _audioPlayer.stop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.orange,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    child: const Text("Dismiss"),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
